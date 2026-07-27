@@ -67,7 +67,49 @@ app.get("/health", (req, res) => {
         status: "ok"
     });
 });
+app.put("/tasks/:id", (req, res) => {
 
+    const taskId = Number(req.params.id);
+
+    const task = tasks.find(t => t.id === taskId);
+
+    if (!task) {
+        return res.status(404).json({
+            error: "Task not found"
+        });
+    }
+
+    const { title, done } = req.body;
+
+    if (!title || typeof done !== "boolean") {
+        return res.status(400).json({
+            error: "Title and done are required"
+        });
+    }
+
+    task.title = title;
+    task.done = done;
+
+    res.json(task);
+
+});
+app.delete("/tasks/:id", (req, res) => {
+    const taskId = Number(req.params.id);
+
+    const index = tasks.findIndex(t => t.id === taskId);
+
+    if (index === -1) {
+        return res.status(404).json({
+            error: "Task not found"
+        });
+    }
+    tasks.splice(index, 1);
+
+    res.status(204).send();
+
+
+
+});
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
